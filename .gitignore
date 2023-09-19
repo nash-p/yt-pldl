@@ -1,2 +1,3 @@
 yt-pldl.code-workspace
 .venv/
+__pycache__/
