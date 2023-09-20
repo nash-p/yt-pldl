@@ -1,6 +1,7 @@
 import googleapiclient.discovery
 from urllib.parse import parse_qs, urlparse
 from secret import API_KEY
+from yt_dlp import YoutubeDL
 
 # extract playlist id from url
 url = "https://www.youtube.com/playlist?list=PL8uLmtrEOEHWuyK0jfrfZ4t4QhW59JFf7"
@@ -22,8 +23,14 @@ while request is not None:
     request = youtube.playlistItems().list_next(request, response)
 
 print(f"total: {len(playlist_items)}")
-playlist_url_List = [
+playlist_urls = [
     f'https://www.youtube.com/watch?v={t["snippet"]["resourceId"]["videoId"]}'
     for t in playlist_items
 ]
-print(playlist_url_List)
+print(playlist_urls)
+
+ydl_opts = {
+    "format": "18",
+}
+with YoutubeDL(ydl_opts) as ydl:
+    ydl.download(playlist_urls)
