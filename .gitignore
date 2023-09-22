@@ -1,3 +1,4 @@
 yt-pldl.code-workspace
 .venv/
 __pycache__/
+secret.py
