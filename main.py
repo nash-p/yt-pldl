@@ -1,11 +1,45 @@
-import googleapiclient.discovery
 from urllib.parse import parse_qs, urlparse
-from secret import API_KEY
+
+import re
+
+import googleapiclient.discovery
 from yt_dlp import YoutubeDL
 
+from secret import API_KEY
+
+
+def valid_url(url):
+    pattern = re.compile(
+        r"(https?://)?(www\.)?youtube\.com/playlist\?list=[\w-]+",
+        re.IGNORECASE,
+    )
+
+    valid_pattern = pattern.match(ask_URL) is not None
+    if not valid_pattern:
+        print("[YT_PLDL] Please provide a valid URL")
+        return False
+
+    return True
+
+
+DEFAULT_URL = "https://www.youtube.com/playlist?list=PL8uLmtrEOEHWuyK0jfrfZ4t4QhW59JFf7"
+URL = ""
+
+# Get playlist URL, if not use default
+while URL == "":
+    ask_URL = input(
+        "[YT_PLDL] Provide youtube playlist URL to download from (leave empty for default)>"
+    )
+    if ask_URL == URL:  # resort to default URL
+        URL = DEFAULT_URL
+    else:  # URL has been provided, check if valid
+        if valid_url(ask_URL):
+            URL = ask_URL
+
+
 # extract playlist id from url
-url = "https://www.youtube.com/playlist?list=PL8uLmtrEOEHWuyK0jfrfZ4t4QhW59JFf7"
-query = parse_qs(urlparse(url).query, keep_blank_values=True)
+
+query = parse_qs(urlparse(URL).query, keep_blank_values=True)
 playlist_id = query["list"][0]
 
 print(f"get all playlist items links from {playlist_id}")
