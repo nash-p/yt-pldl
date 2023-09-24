@@ -1,12 +1,11 @@
 from urllib.parse import parse_qs, urlparse
+from pathlib import Path
 
 import re
 import requests
 
 import googleapiclient.discovery
 from yt_dlp import YoutubeDL
-
-from secret import API_KEY
 
 
 def valid_url(url):
@@ -29,7 +28,8 @@ def valid_url(url):
         try:
             page = requests.get(url)
             print("[YT_PLDL] URL is reachable")
-            success_connect = True
+            connect_success = True
+            return connect_success
         except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError):
             connect_attempts += 1
             print("[YT_PLDL] cannot reach URL, retrying...")
@@ -40,13 +40,27 @@ def valid_url(url):
     return connect_success
 
 
+def init_API_KEY():
+    secret_file = Path("secret.py")
+    if secret_file.is_file():
+        print("[YT_PLDL] 'secret.py' found, importing API keys...")
+    else:
+        print("[YT_PLDL] 'secret.py' not found, creating new...")
+        API_KEY = input("[YT_PLDL] please input new API key> ")
+        with open("secret.py", "w") as secret_file:
+            secret_file.write(f"API_KEY = '{API_KEY}'")
+
+
+init_API_KEY()
+from secret import API_KEY
+
 DEFAULT_URL = "https://www.youtube.com/playlist?list=PL8uLmtrEOEHWuyK0jfrfZ4t4QhW59JFf7"
 URL = ""
 
 # Get playlist URL, if not use default
 while URL == "":
     ask_URL = input(
-        "[YT_PLDL] Provide youtube playlist URL to download from (leave empty for default)>"
+        "[YT_PLDL] Provide youtube playlist URL to download from (leave empty for default)> "
     )
     if ask_URL == URL:  # resort to default URL
         URL = DEFAULT_URL
