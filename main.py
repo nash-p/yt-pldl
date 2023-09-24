@@ -1,6 +1,7 @@
 from urllib.parse import parse_qs, urlparse
 
 import re
+import requests
 
 import googleapiclient.discovery
 from yt_dlp import YoutubeDL
@@ -14,12 +15,29 @@ def valid_url(url):
         re.IGNORECASE,
     )
 
-    valid_pattern = pattern.match(ask_URL) is not None
+    valid_pattern = pattern.match(url) is not None
+
     if not valid_pattern:
         print("[YT_PLDL] Please provide a valid URL")
         return False
 
-    return True
+    print("[YT_PLDL] URL is valid")
+
+    connect_attempts = 0
+    connect_success = False
+    while connect_attempts < 3 and not connect_success:
+        try:
+            page = requests.get(url)
+            print("[YT_PLDL] URL is reachable")
+            success_connect = True
+        except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError):
+            connect_attempts += 1
+            print("[YT_PLDL] cannot reach URL, retrying...")
+
+    if not connect_success:
+        print("[YT_PLDL] cannot connect to URL, check network settings")
+
+    return connect_success
 
 
 DEFAULT_URL = "https://www.youtube.com/playlist?list=PL8uLmtrEOEHWuyK0jfrfZ4t4QhW59JFf7"
