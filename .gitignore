@@ -4,3 +4,4 @@ __pycache__/
 secret.py
 secret.py
 secret.py
+.vscode/settings.json
